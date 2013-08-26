@@ -1,6 +1,6 @@
 Name:           abuse
 Version:        0.8
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        The classic Crack-Dot-Com game
 Group:          Amusements/Games
 # The engine is GPLv2+, the data files are mostly in the public domain, except
@@ -11,7 +11,7 @@ Group:          Amusements/Games
 License:        GPLv2+ and redistributable
 URL:            http://abuse.zoy.org/
 Source0:        http://abuse.zoy.org/raw-attachment/wiki/download/%{name}-%{version}.tar.gz
-Source1:        http://abuse.zoy.org/static/%{name}.png
+Source1:        %{name}.png
 Source2:        %{name}.desktop
 BuildRequires:  SDL-devel SDL_mixer-devel alsa-lib-devel libGLU-devel
 BuildRequires:  desktop-file-utils ImageMagick
@@ -66,6 +66,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Mon Aug 26 2013 Hans de Goede <j.w.r.degoede@gmail.com> - 0.8-4
+- Really resize the icon to be exactly 256x256
+
 * Sat May 11 2013 Hans de Goede <j.w.r.degoede@gmail.com> - 0.8-3
 - Resize icon to be exactly 256x256
 
