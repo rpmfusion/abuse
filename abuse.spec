@@ -1,6 +1,6 @@
 Name:           abuse
 Version:        0.8
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        The classic Crack-Dot-Com game
 Group:          Amusements/Games
 # The engine is GPLv2+, the data files are mostly in the public domain, except
@@ -66,6 +66,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Tue Oct 01 2013 Nicolas Chauvet <kwizart@gmail.com> - 0.8-6
+- Rebuilt
+
 * Mon Sep 30 2013 Nicolas Chauvet <kwizart@gmail.com> - 0.8-5
 - Rebuilt
 
