@@ -1,6 +1,6 @@
 Name:           abuse
 Version:        0.8
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        The classic Crack-Dot-Com game
 Group:          Amusements/Games
 # The engine is GPLv2+, the data files are mostly in the public domain, except
@@ -66,6 +66,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Thu Aug 31 2017 RPM Fusion Release Engineering <kwizart@rpmfusion.org> - 0.8-8
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
+
 * Sun Aug 31 2014 Sérgio Basto <sergio@serjux.com> - 0.8-7
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
 
