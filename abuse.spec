@@ -1,8 +1,10 @@
+%global commit 3c674b19c6ccb5fe4943658f41bb188a8dd19d5c
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+
 Name:           abuse
-Version:        0.8
-Release:        8%{?dist}
+Version:        0.9
+Release:        1%{?dist}
 Summary:        The classic Crack-Dot-Com game
-Group:          Amusements/Games
 # The engine is GPLv2+, the data files are mostly in the public domain, except
 # for the music and sfx files, which may be distributed freely, but not
 # modified, and for the claudio addon, which states: "this ... can be used and
@@ -10,62 +12,69 @@ Group:          Amusements/Games
 # depends heavily on the claudio addon now a days, so it cannot be removed.
 License:        GPLv2+ and redistributable
 URL:            http://abuse.zoy.org/
-Source0:        http://abuse.zoy.org/raw-attachment/wiki/download/%{name}-%{version}.tar.gz
-Source1:        %{name}.png
-Source2:        %{name}.desktop
-BuildRequires:  SDL-devel SDL_mixer-devel alsa-lib-devel libGLU-devel
-BuildRequires:  desktop-file-utils ImageMagick
+Source0:        https://github.com/Xenoveritas/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+# We use the original 0.8 sources for the non-free sfx and music
+Source1:        http://abuse.zoy.org/raw-attachment/wiki/download/%{name}-0.8.tar.gz
+Source2:        %{name}.png
+Source3:        %{name}.desktop
+# Fix NULL pointer deref at startup
+Patch0:         0001-Fix-NULL-pointer-deref-when-built-with-gcc-O1-or-O2.patch
+BuildRequires:  SDL2-devel SDL2_mixer-devel alsa-lib-devel libGLU-devel
+BuildRequires:  cmake desktop-file-utils ImageMagick
 Requires:       hicolor-icon-theme
-# abuse 0.8 comes with the data bundled
-Obsoletes:      fRaBs < 2.11-7
-Provides:       fRaBs = 2.11-7
 
 %description
-This is the SDL version of Abuse, the classic Crack-Dot-Com game. It can run in
-a window or fullscreen and it has stereo sound with sound panning.
+This is the SDL version of Abuse, the classic Crack-Dot-Com game. It can run
+in a window or fullscreen and it has stereo sound with sound panning.
 
 
 %prep
-%setup -q
+%autosetup -p1 -n %{name}-%{commit} -a 1
+mv abuse-0.8/data/sfx abuse-0.8/data/music data
+sed -i 's/@VERSION@/%{version}/' doc/abuse*.6.in
 
 
 %build
-%configure --with-assetdir=%{_datadir}/%{name}
+mkdir build
+pushd build
+# BUILD_SHARED_LIBS:BOOL=OFF -> make builtin helper libs static
+%cmake -DBUILD_SHARED_LIBS:BOOL=OFF ..
 make %{?_smp_mflags}
+popd
 
 
 %install
+pushd build
 %make_install INSTALL="install -p"
+popd
+
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/256x256/apps
 convert -background transparent -resize 256x256 -extent 256x256-28+0 \
-  %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/256x256/apps/%{name}.png
+  %{SOURCE2} $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/256x256/apps/%{name}.png
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/applications 
-desktop-file-install --dir $RPM_BUILD_ROOT%{_datadir}/applications %{SOURCE2}
+desktop-file-install --dir $RPM_BUILD_ROOT%{_datadir}/applications %{SOURCE3}
 
-
-%post
-touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-
-%postun
-if [ $1 -eq 0 ] ; then
-    touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-    gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-fi
-
-%posttrans
-gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+mkdir -p $RPM_BUILD_ROOT%{_mandir}/man6
+install -p -m 0644 doc/abuse.6.in $RPM_BUILD_ROOT%{_mandir}/man6/abuse.6
+install -p -m 0644 doc/abuse-tool.6.in $RPM_BUILD_ROOT%{_mandir}/man6/abuse-tool.6
 
 
 %files
-%doc AUTHORS COPYING* NEWS README
+%doc AUTHORS COPYING* NEWS README.md
 %{_bindir}/%{name}*
-%{_datadir}/%{name}
+%{_datadir}/games/%{name}
 %{_mandir}/man6/%{name}*.6*
 %{_datadir}/icons/hicolor/256x256/apps/%{name}.png
 %{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Mon Feb 26 2018 Hans de Goede <j.w.r.degoede@gmail.com> - 0.9-1
+- Rebase to now github upstream, which calls itself version 0.9
+- 0.9 uses SDL2 instead of SDL-1.2
+- Fix abuse crashing at startup, making it playable again (rf#4276)
+- Modernize spec file a bit
+
 * Thu Aug 31 2017 RPM Fusion Release Engineering <kwizart@rpmfusion.org> - 0.8-8
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
 

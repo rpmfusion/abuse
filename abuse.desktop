@@ -1,8 +1,9 @@
 [Desktop Entry]
 Name=Abuse
 Comment=Dark 2D side-scrolling platform game
-Exec=abuse -fullscreen -datadir /usr/share/abuse
+Exec=abuse -datadir /usr/share/games/abuse
 Icon=abuse
 Terminal=false
 Type=Application
 Categories=Game;ArcadeGame;ActionGame;
+Keywords=game;arcade;run;gun;shooter;
