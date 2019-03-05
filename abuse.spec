@@ -20,7 +20,7 @@ Source3:        %{name}.desktop
 # Fix NULL pointer deref at startup
 Patch0:         0001-Fix-NULL-pointer-deref-when-built-with-gcc-O1-or-O2.patch
 BuildRequires:  SDL2-devel SDL2_mixer-devel alsa-lib-devel libGLU-devel
-BuildRequires:  cmake desktop-file-utils ImageMagick
+BuildRequires:  cmake desktop-file-utils ImageMagick gcc-c++
 Requires:       hicolor-icon-theme
 
 %description
