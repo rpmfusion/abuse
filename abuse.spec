@@ -1,6 +1,8 @@
 %global commit 3c674b19c6ccb5fe4943658f41bb188a8dd19d5c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
+%undefine __cmake_in_source_build
+
 Name:           abuse
 Version:        0.9
 Release:        7%{?dist}
@@ -20,7 +22,7 @@ Source3:        %{name}.desktop
 # Fix NULL pointer deref at startup
 Patch0:         0001-Fix-NULL-pointer-deref-when-built-with-gcc-O1-or-O2.patch
 BuildRequires:  SDL2-devel SDL2_mixer-devel alsa-lib-devel libGLU-devel
-BuildRequires:  cmake desktop-file-utils ImageMagick gcc-c++
+BuildRequires:  cmake3 desktop-file-utils ImageMagick gcc-c++
 Requires:       hicolor-icon-theme
 
 %description
@@ -35,18 +37,13 @@ sed -i 's/@VERSION@/%{version}/' doc/abuse*.6.in
 
 
 %build
-mkdir build
-pushd build
 # BUILD_SHARED_LIBS:BOOL=OFF -> make builtin helper libs static
-%cmake -DBUILD_SHARED_LIBS:BOOL=OFF ..
-make %{?_smp_mflags}
-popd
+%cmake3 -DBUILD_SHARED_LIBS:BOOL=OFF
+%cmake3_build
 
 
 %install
-pushd build
-%make_install INSTALL="install -p"
-popd
+%cmake3_installl
 
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/256x256/apps
 convert -background transparent -resize 256x256 -extent 256x256-28+0 \
