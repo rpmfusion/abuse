@@ -43,7 +43,7 @@ sed -i 's/@VERSION@/%{version}/' doc/abuse*.6.in
 
 
 %install
-%cmake3_installl
+%cmake3_install
 
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/256x256/apps
 convert -background transparent -resize 256x256 -extent 256x256-28+0 \
