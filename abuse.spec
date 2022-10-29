@@ -1,11 +1,6 @@
-%global commit 3c674b19c6ccb5fe4943658f41bb188a8dd19d5c
-%global shortcommit %(c=%{commit}; echo ${c:0:7})
-
-%undefine __cmake_in_source_build
-
 Name:           abuse
-Version:        0.9
-Release:        11%{?dist}
+Version:        0.9.1
+Release:        1%{?dist}
 Summary:        The classic Crack-Dot-Com game
 # The engine is GPLv2+, the data files are mostly in the public domain, except
 # for the music and sfx files, which may be distributed freely, but not
@@ -14,15 +9,15 @@ Summary:        The classic Crack-Dot-Com game
 # depends heavily on the claudio addon now a days, so it cannot be removed.
 License:        GPLv2+ and redistributable
 URL:            http://abuse.zoy.org/
-Source0:        https://github.com/Xenoveritas/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source0:        https://github.com/Xenoveritas/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
 # We use the original 0.8 sources for the non-free sfx and music
 Source1:        http://abuse.zoy.org/raw-attachment/wiki/download/%{name}-0.8.tar.gz
 Source2:        %{name}.png
 Source3:        %{name}.desktop
-# Fix NULL pointer deref at startup
-Patch0:         0001-Fix-NULL-pointer-deref-when-built-with-gcc-O1-or-O2.patch
+
 BuildRequires:  SDL2-devel SDL2_mixer-devel alsa-lib-devel libGLU-devel
 BuildRequires:  cmake3 desktop-file-utils ImageMagick gcc-c++
+BuildRequires:  libappstream-glib
 Requires:       hicolor-icon-theme
 
 %description
@@ -31,9 +26,11 @@ in a window or fullscreen and it has stereo sound with sound panning.
 
 
 %prep
-%autosetup -p1 -n %{name}-%{commit} -a 1
+%autosetup -p1 -a 1
 mv abuse-0.8/data/sfx abuse-0.8/data/music data
 sed -i 's/@VERSION@/%{version}/' doc/abuse*.6.in
+sed -i -e 's@com.github.Xenoveritas.abuse.desktop@abuse.desktop@g' \
+ data/freedesktop/com.github.Xenoveritas.abuse.appdata.xml
 
 
 %build
@@ -45,15 +42,19 @@ sed -i 's/@VERSION@/%{version}/' doc/abuse*.6.in
 %install
 %cmake3_install
 
-mkdir -p $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/256x256/apps
+mkdir -p %{buildroot}%{_datadir}/icons/hicolor/256x256/apps
 convert -background transparent -resize 256x256 -extent 256x256-28+0 \
-  %{SOURCE2} $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/256x256/apps/%{name}.png
-mkdir -p $RPM_BUILD_ROOT%{_datadir}/applications 
-desktop-file-install --dir $RPM_BUILD_ROOT%{_datadir}/applications %{SOURCE3}
+  %{SOURCE2} %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/%{name}.png
+mkdir -p %{buildroot}%{_datadir}/applications 
+desktop-file-install --dir %{buildroot}%{_datadir}/applications %{SOURCE3}
 
-mkdir -p $RPM_BUILD_ROOT%{_mandir}/man6
-install -p -m 0644 doc/abuse.6.in $RPM_BUILD_ROOT%{_mandir}/man6/abuse.6
-install -p -m 0644 doc/abuse-tool.6.in $RPM_BUILD_ROOT%{_mandir}/man6/abuse-tool.6
+mkdir -p %{buildroot}%{_metainfodir}/
+install -p -m 0644 data/freedesktop/com.github.Xenoveritas.abuse.appdata.xml %{buildroot}%{_metainfodir}/
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/com.github.Xenoveritas.abuse.appdata.xml
+
+mkdir -p %{buildroot}%{_mandir}/man6
+install -p -m 0644 doc/abuse.6.in %{buildroot}%{_mandir}/man6/abuse.6
+install -p -m 0644 doc/abuse-tool.6.in %{buildroot}%{_mandir}/man6/abuse-tool.6
 
 
 %files
@@ -63,9 +64,14 @@ install -p -m 0644 doc/abuse-tool.6.in $RPM_BUILD_ROOT%{_mandir}/man6/abuse-tool
 %{_mandir}/man6/%{name}*.6*
 %{_datadir}/icons/hicolor/256x256/apps/%{name}.png
 %{_datadir}/applications/%{name}.desktop
+%{_metainfodir}/com.github.Xenoveritas.abuse.appdata.xml
 
 
 %changelog
+* Sat Oct 29 2022 Leigh Scott <leigh123linux@gmail.com> - 0.9.1-1
+- Update to 0.9.1
+- Fix rfbz#6316
+
 * Mon Aug 08 2022 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 0.9-11
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild and ffmpeg
   5.1
