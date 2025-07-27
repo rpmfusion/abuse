@@ -1,6 +1,6 @@
 Name:           abuse
 Version:        0.9.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        The classic Crack-Dot-Com game
 # The engine is GPLv2+, the data files are mostly in the public domain, except
 # for the music and sfx files, which may be distributed freely, but not
@@ -68,6 +68,9 @@ install -p -m 0644 doc/abuse-tool.6.in %{buildroot}%{_mandir}/man6/abuse-tool.6
 
 
 %changelog
+* Sun Jul 27 2025 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 0.9.1-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_43_Mass_Rebuild
+
 * Wed Jan 29 2025 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 0.9.1-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_42_Mass_Rebuild
 
