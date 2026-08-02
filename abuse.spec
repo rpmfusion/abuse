@@ -16,7 +16,7 @@ Source2:        %{name}.png
 Source3:        %{name}.desktop
 
 BuildRequires:  SDL2-devel SDL2_mixer-devel alsa-lib-devel libGLU-devel
-BuildRequires:  cmake3 desktop-file-utils ImageMagick gcc-c++
+BuildRequires:  cmake desktop-file-utils ImageMagick gcc-c++
 BuildRequires:  libappstream-glib
 Requires:       hicolor-icon-theme
 
@@ -35,12 +35,12 @@ sed -i -e 's@com.github.Xenoveritas.abuse.desktop@abuse.desktop@g' \
 
 %build
 # BUILD_SHARED_LIBS:BOOL=OFF -> make builtin helper libs static
-%cmake3 -DBUILD_SHARED_LIBS:BOOL=OFF
-%cmake3_build
+%cmake -DBUILD_SHARED_LIBS:BOOL=OFF -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+%cmake_build
 
 
 %install
-%cmake3_install
+%cmake_install
 
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/256x256/apps
 convert -background transparent -resize 256x256 -extent 256x256-28+0 \
